@@ -1,20 +1,64 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { ref, onMounted  } from 'vue'
 import Time from './components/Time.vue'
+
+//Get a random id
+const generateId = () => {
+  return crypto.randomUUID()
+}
+
+//List of timers
+const projects = ref([])
+
+//Vars to store the inputs
+const projectInput = ref('')
+const taskInput = ref('')
+
+///Function to delete a task
+const deleteTask = (id) => {
+  projects.value = projects.value.filter(task => task.id !== id)
+}
+
+//Add timer to list
+const addTask = () => {
+  //Inputs not empty
+  if (projectInput.value && taskInput.value) {
+    const isDuplicate = projects.value.some(
+      task => task.project === projectInput.value && task.task === taskInput.value
+    )
+    
+    //Timer does not exist already
+    if (!isDuplicate) {
+      projects.value.push({
+        id: generateId(),
+        project: projectInput.value,
+        task: taskInput.value,
+      })
+      projectInput.value = ''
+      taskInput.value = ''
+    } else {
+      alert('Task already exists.')
+    }
+  }
+}
+
+const currentTimer = ref(0)
+
+const stop_play = (id) => {
+  currentTimer.value = id
+}
+
 </script>
 
 <template>
   <h1>Task Timer</h1>
-  <img src="./assets/icon.png" class="logo" alt="Icon"/>
 
   <div class="timer-container">
     <div class="controls">
-      <input type="text" id="project" placeholder="Project" value="Project 1">
-      <input type="text" id="task" placeholder="Task" value="Task 2">
+      <input type="text" id="project" placeholder="Project" v-model="projectInput">
+      <input type="text" id="task" placeholder="Task" v-model="taskInput">
       <div class="buttons">
-        <button id="stop"><span>&#9724;</span></button>
-        <button id="pause"><span>&#10074;&#10074;</span></button>
-        <span id="timer">00:00:00</span>
+        <button id="stop" @click="addTask"><span>Create Timer</span></button>
       </div>
     </div>
     <table>
@@ -27,11 +71,17 @@ import Time from './components/Time.vue'
         </tr>
       </thead>
       <tbody>
-        <Time project="Project 1" task="Task 1" />
-        <Time project="Project 2" task="Task 1" />
-        <Time project="Project 2" task="Task 2" />
-        <Time project="Project 2" task="Task 3" />
-        <Time project="Project 3" task="Task 1" />
+        <Time
+          v-for="task in projects" 
+          :key="task.id" 
+          :project="task.project" 
+          :task="task.task" 
+          :active="currentTimer.value === task.id" 
+          :onDelete="() => deleteTask(task.id)"
+          :taskId="task.id"
+          @stop_play="stop_play"
+          ref="childCompRef"
+        />
       </tbody>
     </table>
   </div>
