@@ -1,30 +1,97 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { ref, onMounted  } from 'vue'
+import Time from './components/Time.vue'
+
+//Get a random id
+const generateId = () => {
+  return crypto.randomUUID()
+}
+
+//List of timers
+const projects = ref([])
+
+//Vars to store the inputs
+const projectInput = ref('')
+const taskInput = ref('')
+
+///Function to delete a task
+const deleteTask = (id) => {
+  projects.value = projects.value.filter(task => task.id !== id)
+}
+
+//Add timer to list
+const addTask = () => {
+  //Inputs not empty
+  if (projectInput.value && taskInput.value) {
+    const isDuplicate = projects.value.some(
+      task => task.project === projectInput.value && task.task === taskInput.value
+    )
+    
+    //Timer does not exist already
+    if (!isDuplicate) {
+      projects.value.push({
+        id: generateId(),
+        project: projectInput.value,
+        task: taskInput.value,
+      })
+      projectInput.value = ''
+      taskInput.value = ''
+    } else {
+      alert('Task already exists.')
+    }
+  }
+}
+
+const currentTimer = ref(0)
+
+const stop_play = (id) => {
+  currentTimer.value = id
+}
+
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <h1>Task Timer</h1>
+
+  <div class="timer-container">
+    <div class="controls">
+      <input type="text" id="project" placeholder="Project" v-model="projectInput">
+      <input type="text" id="task" placeholder="Task" v-model="taskInput">
+      <div class="buttons">
+        <button id="stop" @click="addTask"><span>Create Timer</span></button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Task</th>
+          <th>Duration</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <Time
+          v-for="task in projects" 
+          :key="task.id" 
+          :project="task.project" 
+          :task="task.task" 
+          :active="currentTimer.value === task.id" 
+          :onDelete="() => deleteTask(task.id)"
+          :taskId="task.id"
+          @stop_play="stop_play"
+          ref="childCompRef"
+        />
+      </tbody>
+    </table>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
 .logo {
   height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+  filter: drop-shadow(0 0 2em #ffffffaa);
 }
 </style>
