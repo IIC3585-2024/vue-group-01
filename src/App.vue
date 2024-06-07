@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Time from './components/Time.vue'
 import { getRandomProject, getRandomTask } from './utils/randomData.js'
 
@@ -14,6 +14,9 @@ const projects = ref([])
 // Vars to store the inputs
 const projectInput = ref('')
 const taskInput = ref('')
+
+// Search term for filtering
+const searchTerm = ref('')
 
 // Function to delete a task
 const deleteTask = (id) => {
@@ -57,6 +60,17 @@ const addRandomTask = async () => {
   addTask();
 }
 
+// Computed property to filter projects
+const filteredProjects = computed(() => {
+  if (!searchTerm.value) {
+    return projects.value;
+  }
+  return projects.value.filter(project =>
+    project.project.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+    project.task.toLowerCase().includes(searchTerm.value.toLowerCase())
+  )
+})
+
 </script>
 
 <template>
@@ -71,6 +85,9 @@ const addRandomTask = async () => {
         <button id="random" @click="addRandomTask"><span>Create Random Timer</span></button>
       </div>
     </div>
+    <div class="search">
+      <input type="text" placeholder="Search..." v-model="searchTerm">
+    </div>
     <table class="task-table">
       <thead>
         <tr>
@@ -82,7 +99,7 @@ const addRandomTask = async () => {
       </thead>
       <tbody>
         <Time
-          v-for="task in projects" 
+          v-for="task in filteredProjects" 
           :key="task.id" 
           :project="task.project" 
           :task="task.task" 
@@ -98,11 +115,31 @@ const addRandomTask = async () => {
 </template>
 
 <style scoped>
-  .logo {
-    height: 6em;
+  .timer-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #ffffffaa);
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .search {
+    margin-bottom: 20px;
+  }
+
+  .search input {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
   }
 
   .task-table {
