@@ -1,7 +1,19 @@
-# Vue 3 + Vite
+# Tarea 4 - Vue
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Esta tarea consiste en crear una aplicación usando el framework Vue, usando sus herramientas y componentes.
 
-## Recommended IDE Setup
+## Instrucciones de ejecución
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+1. Instale las dependencias de node:
+
+```bash
+npm install
+```
+
+2. Ejecute el entorno de vue con:
+
+```bash
+npm run dev
+```
+
+3. Entre a http://localhost:5173
