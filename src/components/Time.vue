@@ -58,8 +58,25 @@ const startCounter = () => {
     <td>{{ formattedTime }}</td>
     <td>
       <button class="play" @click="togglePlay" v-html=playButton></button>
-      <button class="edit">✎</button>
       <button class="delete" @click="onDelete">🗑</button>
     </td>
   </tr>
 </template>
+
+<style scoped>
+  td {
+  background-color: #444;
+  color: white;
+  }
+
+  th, td {
+    border: 1px solid white;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #333;
+    color: white;
+  }
+</style>
