@@ -14,6 +14,7 @@ const projects = ref([])
 // Vars to store the inputs
 const projectInput = ref('')
 const taskInput = ref('')
+const goalInput = ref(600)
 
 // Search term for filtering
 const searchTerm = ref('')
@@ -37,6 +38,7 @@ const addTask = async () => {
         id: generateId(),
         project: projectInput.value,
         task: taskInput.value,
+        goal: goalInput.value,
       })
       projectInput.value = ''
       taskInput.value = ''
@@ -57,6 +59,7 @@ const addRandomTask = async () => {
   const taskName = await getRandomTask();
   projectInput.value = projectName;
   taskInput.value = taskName;
+  goalInput.value = Math.floor(Math.random() * 600) + 1;
   addTask();
 }
 
@@ -80,11 +83,12 @@ const filteredProjects = computed(() => {
     <div class="controls">
       <input type="text" id="project" placeholder="Project" v-model="projectInput">
       <input type="text" id="task" placeholder="Task" v-model="taskInput">
-      <div class="buttons">
+      <input type="number" id="goal" placeholder="Goal (in seconds)" v-model="goalInput">
+    </div>
+    <div class="buttons">
         <button id="stop" @click="addTask"><span>Create Timer</span></button>
         <button id="random" @click="addRandomTask"><span>Create Random Timer</span></button>
       </div>
-    </div>
     <div class="search">
       <input type="text" placeholder="Search..." v-model="searchTerm">
     </div>
@@ -93,6 +97,7 @@ const filteredProjects = computed(() => {
         <tr>
           <th>Project</th>
           <th>Task</th>
+          <th>Remaining</th>
           <th>Duration</th>
           <th>Actions</th>
         </tr>
@@ -102,7 +107,8 @@ const filteredProjects = computed(() => {
           v-for="task in filteredProjects" 
           :key="task.id" 
           :project="task.project" 
-          :task="task.task" 
+          :task="task.task"
+          :goal="task.goal"
           :active="currentTimer.value === task.id" 
           :onDelete="() => deleteTask(task.id)"
           :taskId="task.id"
@@ -130,6 +136,7 @@ const filteredProjects = computed(() => {
   .buttons {
     display: flex;
     gap: 10px;
+    margin-bottom: 20px;
   }
 
   .search {
